@@ -1,13 +1,16 @@
+// Función para mostrar el formulario de registro
 function goToRegister() {
     document.getElementById('login').style.display = 'none';
     document.getElementById('register').style.display = 'block';
 }
 
+// Función para mostrar el formulario de login
 function goToLogin() {
     document.getElementById('login').style.display = 'block';
     document.getElementById('register').style.display = 'none';
 }
 
+// Función para realizar el login
 function login() {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
@@ -27,6 +30,7 @@ function login() {
     }
 }
 
+// Función para registrar un nuevo usuario
 function register() {
     const nombre = document.getElementById('nombre').value;
     const dni = document.getElementById('dni').value;
@@ -64,6 +68,7 @@ function register() {
         });
 }
 
+// Función para mostrar el dashboard dependiendo del puesto
 function goToDashboard(puesto) {
     document.getElementById('login').style.display = 'none';
     document.getElementById('register').style.display = 'none';
@@ -72,11 +77,13 @@ function goToDashboard(puesto) {
         document.getElementById('npsCalculator').style.display = 'block';
     } else if (puesto === 'supervisor') {
         document.getElementById('supervisorDashboard').style.display = 'block';
+        cargarDatosAsesores();  // Cargar asesores desde el JSON
     }
 }
 
+// Función para calcular el NPS desde el formulario del asesor
 document.getElementById('npsForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+    event.preventDefault();  // Evita que el formulario recargue la página
 
     let promotores = parseInt(document.getElementById('promotores').value);
     let detractores = parseInt(document.getElementById('detractores').value);
@@ -107,31 +114,63 @@ document.getElementById('npsForm').addEventListener('submit', function(event) {
     `;
 });
 
-document.getElementById('agregarAsesor').addEventListener('click', function() {
-    const nombreAsesor = document.getElementById('nombreAsesor').value;
-    let asesores = JSON.parse(localStorage.getItem('asesores')) || [];
+// Función para cargar los asesores desde el archivo data.json
+function cargarDatosAsesores() {
+    fetch('./data.json')
+        .then(response => response.json())
+        .then(data => {
+            mostrarListaAsesores(data.asesores);
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));
+}
 
-    if (asesores.length < 20) {
-        asesores.push(nombreAsesor);
-        localStorage.setItem('asesores', JSON.stringify(asesores));
-        Swal.fire('Éxito', 'Asesor agregado exitosamente.', 'success');
-    } else {
-        Swal.fire('Error', 'No puedes agregar más de 20 asesores.', 'error');
+// Función para mostrar la lista de asesores en formato de tabla
+function mostrarListaAsesores(asesores) {
+    const resultadoAsesores = document.getElementById('resultadoAsesores');
+    resultadoAsesores.innerHTML = `
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${asesores.map(asesor => `
+                    <tr>
+                        <td>${asesor.nombre}</td>
+                        <td>${asesor.dni}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Función para buscar un usuario en localStorage por DNI
+function buscarUsuarioPorDNI() {
+    const dni = document.getElementById('dniBuscar').value;
+    const keys = Object.keys(localStorage);
+    let userData = null;
+
+    // Buscar en localStorage para obtener el usuario por DNI
+    for (let key of keys) {
+        let storedUser = JSON.parse(localStorage.getItem(key));
+        if (storedUser && storedUser.dni === dni) {
+            userData = storedUser;
+            break;
+        }
     }
-});
 
-document.getElementById('buscarUsuario').addEventListener('click', function() {
-    const dniUsuario = document.getElementById('dniUsuario').value;
-    const userData = JSON.parse(localStorage.getItem(dniUsuario));
     const resultadoBusqueda = document.getElementById('resultadoBusqueda');
-
     if (userData) {
-        resultadoBusqueda.textContent = 'El nombre de usuario es: ' + userData.usuario;
+        resultadoBusqueda.textContent = `Usuario encontrado: ${userData.usuario}`;
     } else {
         resultadoBusqueda.textContent = 'DNI no registrado.';
     }
-});
+}
 
+// Función para cerrar sesión
 function logout() {
     Swal.fire({
         title: '¿Estás seguro?',

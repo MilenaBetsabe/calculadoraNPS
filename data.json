@@ -1,0 +1,11 @@
+{
+    "asesores": [
+        { "nombre": "Pablo Oga", "dni": "12345678" },
+        { "nombre": "Micaela Nieva", "dni": "87654321" },
+        { "nombre": "Julieta Lescano", "dni": "74185296" },
+        { "nombre": "Nadia Espinosa", "dni": "36925814" },
+        { "nombre": "Nelson Romero", "dni": "95162384" },
+        { "nombre": "Maria Gonzalez", "dni": "79461385" },
+        { "nombre": "Morfeo Neo", "dni": "16347985" }
+    ]
+}
